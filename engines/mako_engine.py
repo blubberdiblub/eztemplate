@@ -16,12 +16,16 @@ class MakoEngine(Engine):
 
     handle = 'mako'
 
-    def __init__(self, template, **kwargs):
+    def __init__(self, template, tolerant=False, **kwargs):
         """Initialize mako template."""
         super(MakoEngine, self).__init__(**kwargs)
 
+        encoding_errors = 'replace' if tolerant else 'strict'
         lookup = TemplateLookup(directories=['.'])
-        self.template = Template(template, lookup=lookup)
+        self.template = Template(template,
+                                 lookup=lookup,
+                                 encoding_errors=encoding_errors,
+                                 )
 
     def apply(self, mapping):
         """Apply a mapping of name-value-pairs to a template."""
