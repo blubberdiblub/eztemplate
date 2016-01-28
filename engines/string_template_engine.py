@@ -15,12 +15,16 @@ class StringTemplate(Engine):
 
     handle = 'string.Template'
 
-    def __init__(self, template, **kwargs):
+    def __init__(self, template, tolerant=False, **kwargs):
         """Initialize string.Template."""
         super(StringTemplate, self).__init__(**kwargs)
 
         self.template = Template(template)
+        self.tolerant = tolerant
 
     def apply(self, mapping):
         """Apply a mapping of name-value-pairs to a template."""
+        if self.tolerant:
+            return self.template.safe_substitute(mapping)
+
         return self.template.substitute(mapping)
