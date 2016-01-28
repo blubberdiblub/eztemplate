@@ -20,11 +20,19 @@ class MakoEngine(Engine):
         """Initialize mako template."""
         super(MakoEngine, self).__init__(**kwargs)
 
+        default_filters = ['filter_undefined'] if tolerant else None
         encoding_errors = 'replace' if tolerant else 'strict'
+        imports = ['def filter_undefined(value):\n'
+                   '    if value is UNDEFINED:\n'
+                   '        return \'<UNDEFINED>\'\n'
+                   '    return value\n']
         lookup = TemplateLookup(directories=['.'])
         self.template = Template(template,
-                                 lookup=lookup,
+                                 default_filters=default_filters,
                                  encoding_errors=encoding_errors,
+                                 imports=imports,
+                                 lookup=lookup,
+                                 strict_undefined=not tolerant,
                                  )
 
     def apply(self, mapping):
