@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Templating engine package."""
 
+from __future__ import print_function
+
+import sys
+
 
 class Engine(object):
 
@@ -8,12 +12,16 @@ class Engine(object):
 
     handle = None
 
-    def __init__(self, **kwargs):
+    def __init__(self, tolerant=False, **kwargs):
         """Initialize template, potentially "compiling" it."""
         assert self.__class__ is not Engine, (
                 "must only instantiate subclasses of Engine")
 
         super(Engine, self).__init__(**kwargs)
+
+        if tolerant:
+            print("WARNING: This engine doesn't support tolerant mode",
+                  file=sys.stderr)
 
     def apply(self, mapping):
         """Apply a mapping of name-value-pairs to a template."""

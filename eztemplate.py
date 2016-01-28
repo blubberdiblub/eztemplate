@@ -21,6 +21,11 @@ def argument_parser():
                         dest='engine',
                         default='string.Template',
                         )
+    parser.add_argument('-t', '--tolerant',
+                        action='store_true',
+                        help="don't fail on missing names",
+                        dest='tolerant',
+                        )
     parser.add_argument('-o', '--outfile',
                         help='output file',
                         dest='outfile',
@@ -85,7 +90,7 @@ def main(args):
 
     for f in args.file:
         raw_template = f.read()
-        template = engine(raw_template)
+        template = engine(raw_template, tolerant=args.tolerant)
         args.outfile.write(template.apply(mapping))
 
 
