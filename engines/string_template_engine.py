@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """Provide the standard Python string.Template engine."""
 
 from __future__ import print_function
