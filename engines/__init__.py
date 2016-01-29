@@ -12,7 +12,7 @@ class Engine(object):
 
     handle = None
 
-    def __init__(self, tolerant=False, **kwargs):
+    def __init__(self, dirname=None, tolerant=False, **kwargs):
         """Initialize template, potentially "compiling" it."""
         assert self.__class__ is not Engine, (
                 "must only instantiate subclasses of Engine")

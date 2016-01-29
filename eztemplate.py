@@ -6,6 +6,8 @@ from __future__ import print_function
 import argparse
 import sys
 
+from os import path
+
 import engines
 
 
@@ -90,7 +92,15 @@ def main(args):
 
     for f in args.file:
         raw_template = f.read()
-        template = engine(raw_template, tolerant=args.tolerant)
+        try:
+            filename = f.name
+        except AttributeError:
+            dirname = None
+        else:
+            dirname = path.dirname(filename)
+        template = engine(raw_template,
+                          dirname=dirname,
+                          tolerant=args.tolerant)
         args.outfile.write(template.apply(mapping))
 
 
