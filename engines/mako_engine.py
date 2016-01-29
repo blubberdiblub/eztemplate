@@ -16,9 +16,12 @@ class MakoEngine(Engine):
 
     handle = 'mako'
 
-    def __init__(self, template, tolerant=False, **kwargs):
+    def __init__(self, template, dirname=None, tolerant=False, **kwargs):
         """Initialize mako template."""
         super(MakoEngine, self).__init__(**kwargs)
+
+        directories = [dirname] if dirname is not None else ['.']
+        lookup = TemplateLookup(directories=directories)
 
         default_filters = ['filter_undefined'] if tolerant else None
         encoding_errors = 'replace' if tolerant else 'strict'
@@ -26,7 +29,6 @@ class MakoEngine(Engine):
                    '    if value is UNDEFINED:\n'
                    '        return \'<UNDEFINED>\'\n'
                    '    return value\n']
-        lookup = TemplateLookup(directories=['.'])
         self.template = Template(template,
                                  default_filters=default_filters,
                                  encoding_errors=encoding_errors,
