@@ -68,7 +68,6 @@ def _init():
                 continue
 
             engines[handle] = member
-            globals()[name] = member
 
 
 _init()
