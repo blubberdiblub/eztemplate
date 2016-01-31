@@ -11,13 +11,19 @@ import engines
 HANDLE = 'mako'
 
 
-class TestStringTemplate(unittest.TestCase):
+class TestAvailability(unittest.TestCase):
 
-    def setUp(self):
+    def test_module_availabilty_coincides_with_template_availability(self):
         try:
             import mako
         except ImportError:
-            self.skipTest("mako module not available")
+            self.assertNotIn(HANDLE, engines.engines, "engine available but module not importable")
+        else:
+            self.assertIn(HANDLE, engines.engines, "engine not available but module importable")
+
+
+@unittest.skipIf(HANDLE not in engines.engines, "engine not available")
+class TestTemplating(unittest.TestCase):
 
     def test_valid_engine(self):
         self.assertIn(HANDLE, engines.engines)
