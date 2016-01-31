@@ -41,7 +41,7 @@ def _init():
 
     module_names = set()
     for filename in filenames:
-        match = re.match(r'^(?P<name>[^_\W]\w*)\.py[co]?$', filename)
+        match = re.match(r'^(?P<name>[A-Z_a-z]\w*)\.py[co]?$', filename)
         if match:
             module_names.add(match.group('name'))
 
