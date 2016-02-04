@@ -32,12 +32,12 @@ class TestArgumentParser(unittest.TestCase):
         parser = eztemplate.argument_parser()
         args = parser.parse_args([])
         self.assertDictEqual(args.__dict__, {
-                'arg':      None,
-                'engine':   'string.Template',
-                'file':     [sys.stdin],
-                'outfile':  sys.stdout,
+                'arg':          None,
+                'engine':       'string.Template',
+                'file':         [sys.stdin],
+                'outfile':      sys.stdout,
                 'delete_empty': False,
-                'tolerant': False,
+                'tolerant':     False,
             })
 
     def test_one_argument_and_output_delete_empty(self):
@@ -52,12 +52,12 @@ class TestArgumentParser(unittest.TestCase):
                 ])
         self.assertEqual(mock_open.call_count, 2)
         self.assertDictEqual(args.__dict__, {
-                'arg':      None,
-                'engine':   'string.Template',
-                'file':     ['<filehandle>'],
-                'outfile':  '<filehandle>',
+                'arg':          None,
+                'engine':       'string.Template',
+                'file':         ['<filehandle>'],
+                'outfile':      '<filehandle>',
                 'delete_empty': True,
-                'tolerant': False,
+                'tolerant':     False,
             })
 
     def test_engine_tolerant_stdout_args_multiple_files(self):
@@ -75,18 +75,18 @@ class TestArgumentParser(unittest.TestCase):
                 ])
         self.assertEqual(mock_open.call_count, 2)
         self.assertDictEqual(args.__dict__, {
-                'arg':      [
-                    'beilage=Kartoffeln',
-                    'essen=Szegediner Gulasch',
+                'arg':          [
+                        'beilage=Kartoffeln',
+                        'essen=Szegediner Gulasch',
                     ],
-                'engine':   'string.Template',
-                'file':     [
-                    '<filehandle>',
-                    '<filehandle>',
+                'engine':       'string.Template',
+                'file':         [
+                        '<filehandle>',
+                        '<filehandle>',
                     ],
-                'outfile':  sys.stdout,
+                'outfile':      sys.stdout,
                 'delete_empty': False,
-                'tolerant': True,
+                'tolerant':     True,
             })
 
 
