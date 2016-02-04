@@ -36,16 +36,18 @@ class TestArgumentParser(unittest.TestCase):
                 'engine':   'string.Template',
                 'file':     [sys.stdin],
                 'outfile':  sys.stdout,
+                'delete_empty': False,
                 'tolerant': False,
             })
 
-    def test_one_argument_and_output(self):
+    def test_one_argument_and_output_delete_empty(self):
         parser = eztemplate.argument_parser()
         mock_open = mock.mock_open()
         mock_open.return_value = '<filehandle>'
         with mock.patch.object(builtins, 'open', mock_open):
             args = parser.parse_args([
                     '--outfile=template2',
+                    '--delete-empty',
                     'template1',
                 ])
         self.assertEqual(mock_open.call_count, 2)
@@ -54,6 +56,7 @@ class TestArgumentParser(unittest.TestCase):
                 'engine':   'string.Template',
                 'file':     ['<filehandle>'],
                 'outfile':  '<filehandle>',
+                'delete_empty': True,
                 'tolerant': False,
             })
 
@@ -82,6 +85,7 @@ class TestArgumentParser(unittest.TestCase):
                     '<filehandle>',
                     ],
                 'outfile':  sys.stdout,
+                'delete_empty': False,
                 'tolerant': True,
             })
 
