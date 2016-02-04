@@ -3,10 +3,32 @@
 
 from __future__ import print_function
 
+import os.path
 
 import em
 
 from . import Engine
+
+
+class SubsystemWrapper(em.Subsystem):
+
+    """Wrap EmPy's Subsystem class.
+
+    Allows to open files relative to a base directory.
+    """
+
+    def __init__(self, basedir=None, **kwargs):
+        """Initialize Subsystem plus a possible base directory."""
+        super(SubsystemWrapper, self).__init__(**kwargs)
+
+        self.basedir = basedir
+
+    def open(self, name, *args, **kwargs):
+        """Open file, possibly relative to a base directory."""
+        if self.basedir is not None:
+            name = os.path.join(self.basedir, name)
+
+        return super(SubsystemWrapper, self).open(name, *args, **kwargs)
 
 
 class EmpyEngine(Engine):
@@ -15,9 +37,14 @@ class EmpyEngine(Engine):
 
     handle = 'empy'
 
-    def __init__(self, template, **kwargs):
+    def __init__(self, template, dirname=None, **kwargs):
         """Initialize empy template."""
         super(EmpyEngine, self).__init__(**kwargs)
+
+        if dirname is not None:
+            # FIXME: This is a really bad idea, as it works like a global.
+            # Blame EmPy.
+            em.theSubsystem = SubsystemWrapper(basedir=dirname)
 
         self.template = template
 
