@@ -19,7 +19,7 @@ class SubsystemWrapper(em.Subsystem):
 
     def __init__(self, basedir=None, **kwargs):
         """Initialize Subsystem plus a possible base directory."""
-        super(SubsystemWrapper, self).__init__(**kwargs)
+        em.Subsystem.__init__(self, **kwargs)
 
         self.basedir = basedir
 
@@ -28,7 +28,7 @@ class SubsystemWrapper(em.Subsystem):
         if self.basedir is not None:
             name = os.path.join(self.basedir, name)
 
-        return super(SubsystemWrapper, self).open(name, *args, **kwargs)
+        return em.Subsystem.open(self, name, *args, **kwargs)
 
 
 class EmpyEngine(Engine):
