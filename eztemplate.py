@@ -4,6 +4,7 @@
 from __future__ import print_function
 
 import argparse
+import os
 import sys
 
 from os import path
@@ -33,6 +34,11 @@ def argument_parser():
                         dest='outfile',
                         type=argparse.FileType('w'),
                         default=sys.stdout,
+                        )
+    parser.add_argument('-d', '--delete-empty',
+                        action='store_true',
+                        help="delete file if output is empty",
+                        dest='delete_empty',
                         )
     parser.add_argument('-a', '--arg',
                         help='any number of name-value-pairs',
@@ -101,7 +107,11 @@ def main(args):
         template = engine(raw_template,
                           dirname=dirname,
                           tolerant=args.tolerant)
-        args.outfile.write(template.apply(mapping))
+        result = template.apply(mapping)
+        if result:
+            args.outfile.write(template.apply(mapping))
+        elif args.delete_empty:
+            os.delete(args.outfile.name)
 
 
 if __name__ == '__main__':
