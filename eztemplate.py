@@ -111,7 +111,7 @@ def main(args):
         if result:
             args.outfile.write(template.apply(mapping))
         elif args.delete_empty:
-            os.delete(args.outfile.name)
+            os.remove(args.outfile.name)
 
 
 if __name__ == '__main__':
