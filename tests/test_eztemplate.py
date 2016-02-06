@@ -31,10 +31,11 @@ class TestArgumentParser(unittest.TestCase):
         args = eztemplate.parse_args([])
         self.assertDictEqual(args.__dict__, {
                 'args':         [{}],
+                'concatenate':  False,
+                'delete_empty': False,
                 'engine':       'string.Template',
                 'infiles':      [sys.stdin],
                 'outfiles':     [sys.stdout],
-                'delete_empty': False,
                 'tolerant':     False,
                 'vary':         None,
             })
@@ -47,10 +48,11 @@ class TestArgumentParser(unittest.TestCase):
             ])
         self.assertDictEqual(args.__dict__, {
                 'args':         [{}],
+                'concatenate':  False,
+                'delete_empty': True,
                 'engine':       'string.Template',
                 'infiles':      ['template1'],
                 'outfiles':     ['template2'],
-                'delete_empty': True,
                 'tolerant':     False,
                 'vary':         None,
             })
@@ -69,13 +71,14 @@ class TestArgumentParser(unittest.TestCase):
                                     'beilage': 'Kartoffeln',
                                     'essen':   'Szegediner Gulasch',
                                 }],
+                'concatenate':  False,
+                'delete_empty': False,
                 'engine':       'string.Template',
                 'infiles':      [
                                     'template1',
                                     'template2',
                                 ],
                 'outfiles':     [sys.stdout],
-                'delete_empty': False,
                 'tolerant':     True,
                 'vary':         None,
             })
