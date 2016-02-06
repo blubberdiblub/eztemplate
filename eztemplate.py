@@ -119,15 +119,14 @@ def parse_args(args=None):
                 pass
         else:
             first = 1 if args.remainder and args.remainder[0] == '--' else 0
-
-            if not args.vary and not args.concatenate:
-                split = first + 1
+            last = (len(args.remainder)
+                    if args.vary or args.concatenate
+                    else first + 1)
+            for split, infile in enumerate(args.remainder[first:last], first):
+                if infile == '--' or '=' in infile:
+                    break
             else:
-                for split, infile in enumerate(args.remainder[first:], first):
-                    if infile == '--' or '=' in infile:
-                        break
-                else:
-                    split = len(args.remainder)
+                split = last
 
             infiles = args.remainder[first:split]
             args.remainder = args.remainder[split:]
