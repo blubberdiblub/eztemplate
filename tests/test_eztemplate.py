@@ -14,7 +14,6 @@ try:
 except ImportError:
     import __builtin__ as builtins
 
-import argparse
 import string
 import sys
 
@@ -29,64 +28,56 @@ import eztemplate
 class TestArgumentParser(unittest.TestCase):
 
     def test_empty_arguments(self):
-        parser = eztemplate.argument_parser()
-        args = parser.parse_args([])
+        args = eztemplate.parse_args([])
         self.assertDictEqual(args.__dict__, {
-                'arg':          None,
+                'args':         [{}],
                 'engine':       'string.Template',
-                'file':         [sys.stdin],
-                'outfile':      sys.stdout,
+                'infiles':      [sys.stdin],
+                'outfiles':     [sys.stdout],
                 'delete_empty': False,
                 'tolerant':     False,
+                'vary':         None,
             })
 
     def test_one_argument_and_output_delete_empty(self):
-        parser = eztemplate.argument_parser()
-        mock_open = mock.mock_open()
-        mock_open.return_value = '<filehandle>'
-        with mock.patch.object(builtins, 'open', mock_open):
-            args = parser.parse_args([
-                    '--outfile=template2',
-                    '--delete-empty',
-                    'template1',
-                ])
-        self.assertEqual(mock_open.call_count, 2)
+        args = eztemplate.parse_args([
+                '--outfile=template2',
+                '--delete-empty',
+                'template1',
+            ])
         self.assertDictEqual(args.__dict__, {
-                'arg':          None,
+                'args':         [{}],
                 'engine':       'string.Template',
-                'file':         ['<filehandle>'],
-                'outfile':      '<filehandle>',
+                'infiles':      ['template1'],
+                'outfiles':     ['template2'],
                 'delete_empty': True,
                 'tolerant':     False,
+                'vary':         None,
             })
 
     def test_engine_tolerant_stdout_args_multiple_files(self):
-        parser = eztemplate.argument_parser()
-        mock_open = mock.mock_open()
-        mock_open.return_value = '<filehandle>'
-        with mock.patch.object(builtins, 'open', mock_open):
-            args = parser.parse_args([
-                    '-e', 'string.Template',
-                    '--tolerant',
-                    '-a', 'beilage=Kartoffeln',
-                    '--arg', 'essen=Szegediner Gulasch',
-                    'template1',
-                    'template2',
-                ])
-        self.assertEqual(mock_open.call_count, 2)
+        args = eztemplate.parse_args([
+                '-e', 'string.Template',
+                '--tolerant',
+                '-a', 'beilage=Kartoffeln',
+                '--arg', 'essen=Szegediner Gulasch',
+                'template1',
+                'template2',
+            ])
         self.assertDictEqual(args.__dict__, {
-                'arg':          [
-                        'beilage=Kartoffeln',
-                        'essen=Szegediner Gulasch',
-                    ],
+                'args':         [{
+                                    'beilage': 'Kartoffeln',
+                                    'essen':   'Szegediner Gulasch',
+                                }],
                 'engine':       'string.Template',
-                'file':         [
-                        '<filehandle>',
-                        '<filehandle>',
-                    ],
-                'outfile':      sys.stdout,
+                'infiles':      [
+                                    'template1',
+                                    'template2',
+                                ],
+                'outfiles':     [sys.stdout],
                 'delete_empty': False,
                 'tolerant':     True,
+                'vary':         None,
             })
 
 
