@@ -68,6 +68,11 @@ def parse_args(args=None):
                        help="any number of input files",
                        metavar="FILE",
                        )
+    group.add_argument('-c', '--concatenate',
+                       action='store_true',
+                       dest='concatenate',
+                       help="concatenate multiple input files into one output",
+                       )
 
     group = parser.add_argument_group("Name-value pairs")
     group.add_argument('-a', '--arg',
@@ -106,22 +111,37 @@ def parse_args(args=None):
 
     if not args.infiles:
         if args.args:
-            i = len(args.remainder)
-        else:
+            infiles = args.remainder
+            args.remainder = []
             try:
-                i = args.remainder.index('--')
+                infiles.remove('--')
             except ValueError:
-                i = len(args.remainder)
+                pass
+        else:
+            first = 1 if args.remainder and args.remainder[0] == '--' else 0
 
-        args.infiles = [name if name != '-' else sys.stdin
-                        for name in args.remainder[:i]] if i else [sys.stdin]
-        args.remainder = args.remainder[i + 1:]
+            if not args.vary and not args.concatenate:
+                split = first + 1
+            else:
+                for split, infile in enumerate(args.remainder[first:], first):
+                    if infile == '--' or '=' in infile:
+                        break
+                else:
+                    split = len(args.remainder)
+
+            infiles = args.remainder[first:split]
+            args.remainder = args.remainder[split:]
+
+        args.infiles = [path if path != '-' else sys.stdin
+                        for path in infiles] if infiles else [sys.stdin]
 
     if args.args:
         flat_args = args.args
     else:
         flat_args = args.remainder
         args.remainder = []
+        if flat_args and flat_args[0] == '--':
+            flat_args = flat_args[1:]
 
     args.args = []
     mapping = {}
