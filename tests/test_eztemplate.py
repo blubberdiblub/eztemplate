@@ -85,6 +85,29 @@ class TestArgumentParser(unittest.TestCase):
                 'vary':         None,
             })
 
+    def test_engine_separator_template_separator_args(self):
+        args = eztemplate.parse_args([
+                '--engine', 'string.Template',
+                '--',
+                'template',
+                '--',
+                'beilage=Kartoffeln',
+                'essen=Szegediner Gulasch',
+            ])
+        self.assertDictEqual(vars(args), {
+                'args':         [{
+                                    'beilage': 'Kartoffeln',
+                                    'essen':   'Szegediner Gulasch',
+                                }],
+                'concatenate':  False,
+                'delete_empty': False,
+                'engine':       'string.Template',
+                'infiles':      ['template'],
+                'outfiles':     [sys.stdout],
+                'tolerant':     False,
+                'vary':         None,
+            })
+
 
 class TestCheckEngine(unittest.TestCase):
     
