@@ -3,7 +3,6 @@
 
 from __future__ import print_function
 
-
 from string import Template
 
 from . import Engine
@@ -24,6 +23,10 @@ class StringTemplate(Engine):
 
     def apply(self, mapping):
         """Apply a mapping of name-value-pairs to a template."""
+        mapping = {name: self.str(value, tolerant=self.tolerant)
+                   for name, value in mapping.items()
+                   if value is not None or self.tolerant}
+
         if self.tolerant:
             return self.template.safe_substitute(mapping)
 
