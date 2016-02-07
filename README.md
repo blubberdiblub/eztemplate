@@ -53,3 +53,41 @@ When you're calling `eztemplate.py` from a script or similar - i. e. non-interac
 ```sh
 echo 'Hello, $entity.' | ./eztemplate.py --stdin --arg entity=world
 ```
+
+
+Templating engines
+------------------
+
+**eztemplate** supports several templating engines. You select the one you want to use with the `-e` or `--engine` option. Specifying `help` instead of a name will list all currently available engines:
+
+```sh
+./eztemplate.py -e help
+```
+
+Engines missing the required packages, modules or libraries will not be displayed. For instance to be able to use the `mako` or the `empy` engine, you need to have the respective python packages installed and working.
+
+However, **eztemplate** comes with simple built-in engines which are available at all times. The `string.Template` engine is the default when you don't explicitly specify one.
+
+
+### string.Template engine
+
+This engine is named after the [string.Template class](https://docs.python.org/library/string.html#template-strings) in the Python standard library. It substitutes identifiers beginning with a dollar sign. To resolve ambiguities, you can also enclose the identifier in curly braces. It's similar to shell variable subsitution minus the more sophisticated features. It suffices for simple cases where you just need to insert some values into a text:
+
+```bash
+./eztemplate.py --stdin \
+  --arg user="$( getent passwd "$USER" | cut -d: -f5 | cut -d, -f1 )" \
+  --arg food=cake --arg vendor=cafeteria --arg price="$RANDOM" \
+  <<\EOF
+Hello, $user.
+
+If you're hungry, get some ${food}s from the $vendor.
+It's only $$$price per piece.
+EOF
+```
+
+Which should produce output like this:
+
+    Hello, Niels Boehm.
+    
+    If you're hungry, get some cakes from the cafeteria.
+    It's only $29993 per piece.
