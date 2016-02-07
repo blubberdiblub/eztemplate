@@ -108,6 +108,20 @@ class TestArgumentParser(unittest.TestCase):
                 'vary':         None,
             })
 
+    def test_fail_multiple_infiles(self):
+        mock_stderr = StringIO()
+        try:
+            with mock.patch('sys.stderr', mock_stderr):
+                eztemplate.parse_args([
+                    '--args', 'foo=bar',
+                    'template1',
+                    'template2',
+                ])
+        except SystemExit as e:
+            self.assertEqual(e.args[0], 2, "didn't exit with return code 2")
+        else:
+            self.fail("didn't exit")
+
 
 class TestCheckEngine(unittest.TestCase):
     
