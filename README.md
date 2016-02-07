@@ -48,7 +48,7 @@ It should produce this output:
 
     Hello, world.
 
-When you're calling `eztemplate.py` from a script or similar - i. e. non-interactively - you should specify everything as explicitly as possible (in particular all input files or _stdin_ as well as name-value pairs) and avoid using positional arguments. Everything can be specified using options, which avoids ambiguities:
+When you're calling `eztemplate.py` from a script or similar - i. e. non-interactively - you should specify everything as explicitly as possible (in particular all input files or _stdin_ as well as name-value pairs) and refrain from using positional arguments. Everything can be specified using options, which avoids ambiguities:
 
 ```sh
 echo 'Hello, $entity.' | ./eztemplate.py --stdin --arg entity=world
