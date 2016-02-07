@@ -57,10 +57,12 @@ class TestArgumentParser(unittest.TestCase):
                 'vary':         None,
             })
 
-    def test_engine_tolerant_stdout_args_multiple_files(self):
+    def test_engine_tolerant_stdout_concatenate_args_multiple_files(self):
         args = eztemplate.parse_args([
                 '-e', 'string.Template',
                 '--tolerant',
+                '--stdout',
+                '--concatenate',
                 '-a', 'beilage=Kartoffeln',
                 '--arg', 'essen=Szegediner Gulasch',
                 'template1',
@@ -71,7 +73,7 @@ class TestArgumentParser(unittest.TestCase):
                                     'beilage': 'Kartoffeln',
                                     'essen':   'Szegediner Gulasch',
                                 }],
-                'concatenate':  False,
+                'concatenate':  True,
                 'delete_empty': False,
                 'engine':       'string.Template',
                 'infiles':      [
