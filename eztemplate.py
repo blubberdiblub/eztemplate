@@ -214,15 +214,22 @@ def constant_outfile_iterator(outfiles, infiles, arggroups):
         else:
             path = outfile
 
-        abspath = os.path.abspath(path)
+        if not path or outfile is sys.stdout:
+            abspath = dirname = basename = stem = ext = realpath = None
+            realdrive = realdir = realbase = realstem = realext = None
+        else:
+            abspath = os.path.abspath(path)
 
-        dirname, basename = os.path.split(path)
-        stem, ext = os.path.splitext(basename)
+            dirname, basename = os.path.split(path)
+            stem, ext = os.path.splitext(basename)
 
-        realpath = os.path.realpath(path)
-        realdrive, tail = os.path.splitdrive(realpath)
-        realdir, realbase = os.path.split(tail)
-        realstem, realext = os.path.splitext(realbase)
+            if not dirname:
+                dirname = os.curdir
+
+            realpath = os.path.realpath(path)
+            realdrive, tail = os.path.splitdrive(realpath)
+            realdir, realbase = os.path.split(tail)
+            realstem, realext = os.path.splitext(realbase)
 
         mapping = dict(arggroups[0],
                        ez_path=path,
