@@ -3,7 +3,15 @@
 
 from __future__ import print_function
 
+import collections
+import itertools
+import numbers
 import sys
+
+try:
+    basestring
+except NameError:
+    basestring = str
 
 
 class Engine(object):
@@ -22,6 +30,76 @@ class Engine(object):
         if tolerant:
             print("WARNING: This engine doesn't support tolerant mode",
                   file=sys.stderr)
+
+    def str(self, value, tolerant=False, limit=1000, seen=frozenset()):
+        """Transform value into a representation suitable for substitution."""
+        if value is None:
+            if tolerant:
+                return ""
+
+            raise ValueError("value is None")
+
+        if isinstance(value, (bool, numbers.Number, basestring)):
+            return str(value)
+
+        if not isinstance(value, collections.Iterable):
+            if not tolerant:
+                raise ValueError("unknown value type")
+
+            try:
+                name = value.name
+            except AttributeError:
+                try:
+                    name = value.__name__
+                except AttributeError:
+                    try:
+                        name = value.__class__.__name__
+                    except AttributeError:
+                        return "<?>"
+
+            return "<%s>" % (name,)
+
+        is_mapping = isinstance(value, collections.Mapping)
+
+        if not seen:
+            wrap = "%s"
+        elif is_mapping:
+            wrap = "{%s}"
+        else:
+            wrap = "[%s]"
+
+        id_ = id(value)
+        if id_ in seen:
+            if tolerant:
+                return wrap % ("...",)
+            raise ValueError("recursive representation")
+        seen = seen.union((id_,))
+
+        if is_mapping:
+            items = [(self.str(n, tolerant=tolerant, limit=limit, seen=seen),
+                      self.str(v, tolerant=tolerant, limit=limit, seen=seen))
+                     for n, v in value.items()]
+            items.sort()
+            items = ("%s=%s" for n, v in items)
+        else:
+            it = iter(value)
+            items = [self.str(item, tolerant=tolerant, limit=limit, seen=seen)
+                     for item in itertools.islice(
+                         it,
+                         len(value)
+                         if isinstance(value, collections.Sized)
+                         else limit)]
+            items.sort()
+            try:
+                next(it)
+            except StopIteration:
+                pass
+            else:
+                if not tolerant:
+                    raise ValueError("iterable too long")
+                items.append("...")
+
+        return wrap % (", ".join(items),)
 
     def apply(self, mapping):
         """Apply a mapping of name-value-pairs to a template."""
