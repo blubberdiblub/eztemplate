@@ -29,7 +29,7 @@ class TestArgumentParser(unittest.TestCase):
 
     def test_empty_arguments(self):
         args = eztemplate.parse_args([])
-        self.assertDictEqual(args.__dict__, {
+        self.assertDictEqual(vars(args), {
                 'args':         [{}],
                 'concatenate':  False,
                 'delete_empty': False,
@@ -46,7 +46,7 @@ class TestArgumentParser(unittest.TestCase):
                 '--delete-empty',
                 'template1',
             ])
-        self.assertDictEqual(args.__dict__, {
+        self.assertDictEqual(vars(args), {
                 'args':         [{}],
                 'concatenate':  False,
                 'delete_empty': True,
@@ -66,7 +66,7 @@ class TestArgumentParser(unittest.TestCase):
                 'template1',
                 'template2',
             ])
-        self.assertDictEqual(args.__dict__, {
+        self.assertDictEqual(vars(args), {
                 'args':         [{
                                     'beilage': 'Kartoffeln',
                                     'essen':   'Szegediner Gulasch',
