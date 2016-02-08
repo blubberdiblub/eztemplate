@@ -6,6 +6,7 @@ from __future__ import print_function
 import argparse
 import os
 import os.path
+import re
 import sys
 
 import engines
@@ -206,7 +207,71 @@ def constant_outfile_iterator(outfiles, infiles, arggroups):
     assert len(infiles) == 1
     assert len(arggroups) == 1
 
-    for outfile in outfiles:
+    return ((outfile, infiles[0], arggroups[0]) for outfile in outfiles)
+
+
+def variable_outfile_iterator(outfiles, infiles, arggroups, engine):
+    """Iterate over variable output file name template."""
+    assert len(outfiles) == 1
+
+    template = engine(outfiles[0], tolerant=False)
+
+    for infile in infiles:
+        if infile is sys.stdin:
+            path = '-'
+        elif hasattr(infile, 'read'):
+            try:
+                path = infile.name
+            except AttributeError:
+                path = None
+        else:
+            path = infile
+
+        if not path or infile is sys.stdin:
+            dirname = basename = stem = ext = number = i = None
+        else:
+            dirname, basename = os.path.split(path)
+            stem, ext = os.path.splitext(basename)
+            number = re.findall(r'\d+', basename)
+            i = number[-1] if number else None
+
+        for arggroup in arggroups:
+            mapping = dict(arggroup,
+                           path=path,
+                           dirname=dirname,
+                           basename=basename,
+                           stem=stem,
+                           ext=ext,
+                           number=number,
+                           i=i,
+                           )
+
+            outfile = template.apply(mapping)
+
+            yield (outfile, infile, arggroup)
+
+
+def process_combinations(combinations, engine):
+    """Process outfile-infile-arggroup combinations."""
+    outfiles = set()
+    templates = {}
+
+    for outfile, infile, arggroup in combinations:
+        if infile in templates:
+            template = templates[infile]
+        else:
+            if hasattr(infile, 'read'):
+                template = infile.read()
+                dirname = None
+            else:
+                with open(infile, 'r') as f:
+                    template = f.read()
+                dirname = os.path.dirname(infile)
+
+            template = templates[infile] = engine(template,
+                                                  dirname=dirname,
+                                                  tolerant=args.tolerant)
+
         if outfile is sys.stdout:
             path = '-'
         elif hasattr(outfile, 'write'):
@@ -234,7 +299,7 @@ def constant_outfile_iterator(outfiles, infiles, arggroups):
             realdir, realbase = os.path.split(tail)
             realstem, realext = os.path.splitext(realbase)
 
-        mapping = dict(arggroups[0],
+        mapping = dict(arggroup,
                        ez_path=path,
                        ez_abspath=abspath,
                        ez_dirname=dirname,
@@ -249,7 +314,19 @@ def constant_outfile_iterator(outfiles, infiles, arggroups):
                        ez_realext=realext,
                        )
 
-        yield (outfile, infiles[0], mapping)
+        result = template.apply(mapping)
+
+        if hasattr(outfile, 'write'):
+            if result:
+                outfile.write(result)
+        elif result or not args.delete_empty:
+            if outfile in outfiles:
+                raise IOError("trying to write twice to the same file")
+            outfiles.add(outfile)
+            with open(outfile, 'w') as f:
+                f.write(result)
+        else:
+            os.remove(outfile)
 
 
 def main(args):
@@ -257,35 +334,16 @@ def main(args):
     engine = engines.engines[args.engine]
 
     if args.vary:
-        raise NotImplementedError("vary is not yet implemented")
+        it = variable_outfile_iterator(args.outfiles,
+                                       args.infiles,
+                                       args.args,
+                                       engine)
     else:
         it = constant_outfile_iterator(args.outfiles,
                                        args.infiles,
                                        args.args)
 
-    for outfile, infile, mapping in it:
-        if hasattr(infile, 'read'):
-            raw_template = infile.read()
-            dirname = None
-        else:
-            with open(infile, 'r') as f:
-                raw_template = f.read()
-            dirname = os.path.dirname(infile)
-
-        template = engine(raw_template,
-                          dirname=dirname,
-                          tolerant=args.tolerant)
-
-        result = template.apply(mapping)
-
-        if hasattr(outfile, 'write'):
-            if result:
-                outfile.write(result)
-        elif result or not args.delete_empty:
-            with open(outfile, 'w') as f:
-                f.write(result)
-        else:
-            os.remove(outfile)
+    process_combinations(it, engine)
 
 
 if __name__ == '__main__':
