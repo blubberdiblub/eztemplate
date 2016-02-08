@@ -4,6 +4,7 @@
 from __future__ import print_function
 
 import argparse
+import errno
 import os
 import os.path
 import re
@@ -326,7 +327,11 @@ def process_combinations(combinations, engine):
             with open(outfile, 'w') as f:
                 f.write(result)
         else:
-            os.remove(outfile)
+            try:
+                os.remove(outfile)
+            except OSError as e:
+                if e.errno != errno.ENOENT:
+                    raise
 
 
 def main(args):
