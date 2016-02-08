@@ -218,6 +218,59 @@ def make_mapping(args):
     return mapping
 
 
+def make_path_properties(file_or_path, prefix=''):
+    """Build useful properties from a file path."""
+    is_std = file_or_path in (sys.stdin, sys.stdout, sys.stderr)
+
+    if is_std:
+        path = '-'
+    elif is_filelike(file_or_path):
+        try:
+            path = str(file_or_path.name)
+        except AttributeError:
+            path = None
+    else:
+        path = str(file_or_path)
+
+    if is_std or not path:
+        abspath = dirname = basename = stem = ext = None
+        realpath = realdrive = realdir = realbase = realstem = realext = None
+        numbers = num = None
+    else:
+        abspath = os.path.abspath(path)
+
+        dirname, basename = os.path.split(path)
+        stem, ext = os.path.splitext(basename)
+
+        if not dirname:
+            dirname = os.curdir
+
+        realpath = os.path.realpath(path)
+        realdrive, tail = os.path.splitdrive(realpath)
+        realdir, realbase = os.path.split(tail)
+        realstem, realext = os.path.splitext(realbase)
+
+        numbers = re.findall(r'\d+', basename)
+        num = numbers[-1] if numbers else None
+
+    return {
+            prefix + 'path':      path,
+            prefix + 'abspath':   abspath,
+            prefix + 'dirname':   dirname,
+            prefix + 'basename':  basename,
+            prefix + 'stem':      stem,
+            prefix + 'ext':       ext,
+            prefix + 'realpath':  realpath,
+            prefix + 'realdrive': realdrive,
+            prefix + 'realdir':   realdir,
+            prefix + 'realbase':  realbase,
+            prefix + 'realstem':  realstem,
+            prefix + 'realext':   realext,
+            prefix + 'numbers':   numbers,
+            prefix + 'num':       num,
+        }
+
+
 def constant_outfile_iterator(outfiles, infiles, arggroups):
     """Iterate over all output files."""
     assert len(infiles) == 1
@@ -233,37 +286,10 @@ def variable_outfile_iterator(outfiles, infiles, arggroups, engine):
     template = engine(outfiles[0], tolerant=False)
 
     for infile in infiles:
-        if infile is sys.stdin:
-            path = '-'
-        elif is_filelike(infile):
-            try:
-                path = infile.name
-            except AttributeError:
-                path = None
-        else:
-            path = infile
-
-        if not path or infile is sys.stdin:
-            dirname = basename = stem = ext = number = i = None
-        else:
-            dirname, basename = os.path.split(path)
-            stem, ext = os.path.splitext(basename)
-            number = re.findall(r'\d+', basename)
-            i = number[-1] if number else None
+        properties = make_path_properties(infile, prefix='')
 
         for arggroup in arggroups:
-            mapping = dict(arggroup,
-                           path=path,
-                           dirname=dirname,
-                           basename=basename,
-                           stem=stem,
-                           ext=ext,
-                           number=number,
-                           i=i,
-                           )
-
-            outfile = template.apply(mapping)
-
+            outfile = template.apply(dict(arggroup, **properties))
             yield (outfile, infile, arggroup)
 
 
@@ -306,50 +332,9 @@ def process_combinations(combinations, engine, tolerant=False):
 
     for outfile, infile, arggroup in combinations:
         template = templatereader.read(infile)
+        properties = make_path_properties(outfile, prefix='ez_')
 
-        if outfile is sys.stdout:
-            path = '-'
-        elif is_filelike(outfile):
-            try:
-                path = outfile.name
-            except AttributeError:
-                path = None
-        else:
-            path = outfile
-
-        if not path or outfile is sys.stdout:
-            abspath = dirname = basename = stem = ext = realpath = None
-            realdrive = realdir = realbase = realstem = realext = None
-        else:
-            abspath = os.path.abspath(path)
-
-            dirname, basename = os.path.split(path)
-            stem, ext = os.path.splitext(basename)
-
-            if not dirname:
-                dirname = os.curdir
-
-            realpath = os.path.realpath(path)
-            realdrive, tail = os.path.splitdrive(realpath)
-            realdir, realbase = os.path.split(tail)
-            realstem, realext = os.path.splitext(realbase)
-
-        mapping = dict(arggroup,
-                       ez_path=path,
-                       ez_abspath=abspath,
-                       ez_dirname=dirname,
-                       ez_basename=basename,
-                       ez_stem=stem,
-                       ez_ext=ext,
-                       ez_realpath=realpath,
-                       ez_realdrive=realdrive,
-                       ez_realdir=realdir,
-                       ez_realbase=realbase,
-                       ez_realstem=realstem,
-                       ez_realext=realext,
-                       )
-
-        result = template.apply(mapping)
+        result = template.apply(dict(arggroup, **properties))
 
         if is_filelike(outfile):
             if result:
