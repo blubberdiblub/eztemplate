@@ -286,7 +286,6 @@ class CachedTemplateReader(object):
 def process_combinations(combinations, engine, tolerant=False):
     """Process outfile-infile-arggroup combinations."""
     outfiles = set()
-    templates = {}
 
     templatereader = CachedTemplateReader(engine, tolerant=tolerant)
 
