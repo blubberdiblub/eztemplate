@@ -13,6 +13,21 @@ import sys
 import engines
 
 
+def is_filelike(ob):
+    """Check for filelikeness of an object.
+
+    Needed to distinguish it from file names.
+    Returns true if it has a read or a write method.
+    """
+    if hasattr(ob, 'read') and callable(ob.read):
+        return True
+
+    if hasattr(ob, 'write') and callable(ob.write):
+        return True
+
+    return False
+
+
 def parse_args(args=None):
     """Parse command line arguments."""
     # The argparse module provides a nice abstraction for argument parsing.
@@ -109,8 +124,8 @@ def parse_args(args=None):
     if args.vary:
         if len(args.outfiles) != 1:
             parser.error("need exactly one output file template")
-        if hasattr(args.outfiles[0], 'write'):
-            parser.error("vary required an output file template")
+        if is_filelike(args.outfiles[0]):
+            parser.error("vary requires an output file template")
     elif not args.outfiles:
         args.outfiles = [sys.stdout]
 
@@ -220,7 +235,7 @@ def variable_outfile_iterator(outfiles, infiles, arggroups, engine):
     for infile in infiles:
         if infile is sys.stdin:
             path = '-'
-        elif hasattr(infile, 'read'):
+        elif is_filelike(infile):
             try:
                 path = infile.name
             except AttributeError:
@@ -267,7 +282,7 @@ class CachedTemplateReader(object):
         if file_or_path in self._cached_templates:
             return self._cached_templates[file_or_path]
 
-        if hasattr(file_or_path, 'read'):
+        if is_filelike(file_or_path):
             template = file_or_path.read()
             dirname = None
         else:
@@ -294,7 +309,7 @@ def process_combinations(combinations, engine, tolerant=False):
 
         if outfile is sys.stdout:
             path = '-'
-        elif hasattr(outfile, 'write'):
+        elif is_filelike(outfile):
             try:
                 path = outfile.name
             except AttributeError:
@@ -336,7 +351,7 @@ def process_combinations(combinations, engine, tolerant=False):
 
         result = template.apply(mapping)
 
-        if hasattr(outfile, 'write'):
+        if is_filelike(outfile):
             if result:
                 outfile.write(result)
         elif result or not args.delete_empty:
