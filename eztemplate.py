@@ -45,9 +45,9 @@ def parse_args(args=None):
                        metavar="FILE",
                        )
     group.add_argument('--vary',
+                       action='store_true',
                        dest='vary',
                        help="vary output file name according to template",
-                       metavar="TEMPLATE",
                        )
     group.add_argument('-d', '--delete-empty',
                        action='store_true',
@@ -104,9 +104,12 @@ def parse_args(args=None):
     if args.engine not in engines.engines:
         parser.error("Engine '%s' is not available." % (args.engine,))
 
-    if args.outfiles and args.vary:
-        parser.error("cannot use both static and varying output files")
-    elif not args.outfiles and not args.vary:
+    if args.vary:
+        if len(args.outfiles) != 1:
+            parser.error("need exactly one output file template")
+        if hasattr(args.outfiles[0], 'write'):
+            parser.error("vary required an output file template")
+    elif not args.outfiles:
         args.outfiles = [sys.stdout]
 
     if not args.infiles:
