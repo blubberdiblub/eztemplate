@@ -37,7 +37,7 @@ class TestArgumentParser(unittest.TestCase):
                 'infiles':      [sys.stdin],
                 'outfiles':     [sys.stdout],
                 'tolerant':     False,
-                'vary':         None,
+                'vary':         False,
             })
 
     def test_one_argument_and_output_delete_empty(self):
@@ -54,7 +54,7 @@ class TestArgumentParser(unittest.TestCase):
                 'infiles':      ['template1'],
                 'outfiles':     ['template2'],
                 'tolerant':     False,
-                'vary':         None,
+                'vary':         False,
             })
 
     def test_engine_tolerant_stdout_concatenate_args_multiple_files(self):
@@ -82,7 +82,7 @@ class TestArgumentParser(unittest.TestCase):
                                 ],
                 'outfiles':     [sys.stdout],
                 'tolerant':     True,
-                'vary':         None,
+                'vary':         False,
             })
 
     def test_engine_separator_template_separator_args(self):
@@ -105,7 +105,7 @@ class TestArgumentParser(unittest.TestCase):
                 'infiles':      ['template'],
                 'outfiles':     [sys.stdout],
                 'tolerant':     False,
-                'vary':         None,
+                'vary':         False,
             })
 
     def test_fail_multiple_infiles(self):
