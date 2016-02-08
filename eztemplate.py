@@ -262,24 +262,24 @@ class CachedTemplateReader(object):
         self._tolerant = tolerant
         self._cached_templates = {}
 
-    def read(self, filelike):
+    def read(self, file_or_path):
         """Read template from cache or file."""
-        if filelike in self._cached_templates:
-            return self._cached_templates[filelike]
+        if file_or_path in self._cached_templates:
+            return self._cached_templates[file_or_path]
 
-        if hasattr(filelike, 'read'):
-            template = filelike.read()
+        if hasattr(file_or_path, 'read'):
+            template = file_or_path.read()
             dirname = None
         else:
-            with open(filelike, 'r') as f:
+            with open(file_or_path, 'r') as f:
                 template = f.read()
-            dirname = os.path.dirname(filelike)
+            dirname = os.path.dirname(file_or_path)
 
         template = self._engine(template,
                                 dirname=dirname,
                                 tolerant=self._tolerant)
 
-        self._cached_templates[filelike] = template
+        self._cached_templates[file_or_path] = template
         return template
 
 
