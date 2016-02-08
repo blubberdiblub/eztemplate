@@ -66,6 +66,12 @@ def parse_args(args=None):
                        dest='vary',
                        help="vary output file name according to template",
                        )
+    group.add_argument('-r', '--read-old',
+                       action='store_true',
+                       dest='read_old',
+                       help="read preexisting output files and"
+                            "hand the respective content to the template",
+                       )
     group.add_argument('-d', '--delete-empty',
                        action='store_true',
                        dest='delete_empty',
@@ -324,7 +330,7 @@ class CachedTemplateReader(object):
         return template
 
 
-def process_combinations(combinations, engine, tolerant=False):
+def process_combinations(combinations, engine, tolerant=False, read_old=False):
     """Process outfile-infile-arggroup combinations."""
     outfiles = set()
 
@@ -333,6 +339,15 @@ def process_combinations(combinations, engine, tolerant=False):
     for outfile, infile, arggroup in combinations:
         template = templatereader.read(infile)
         properties = make_path_properties(outfile, prefix='ez_')
+
+        if read_old:
+            if is_filelike(outfile):
+                raise Exception("cannot read already open output streams")
+            try:
+                with open(outfile, 'r') as f:
+                    properties['ez_content'] = f.read()
+            except IOError:
+                properties['ez_content'] = None
 
         result = template.apply(dict(arggroup, **properties))
 
@@ -367,7 +382,10 @@ def main(args):
                                        args.infiles,
                                        args.args)
 
-    process_combinations(it, engine, tolerant=args.tolerant)
+    process_combinations(it, engine,
+                         tolerant=args.tolerant,
+                         read_old=args.read_old,
+                         )
 
 
 if __name__ == '__main__':
