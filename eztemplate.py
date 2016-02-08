@@ -254,12 +254,16 @@ def variable_outfile_iterator(outfiles, infiles, arggroups, engine):
 
 class CachedTemplateReader(object):
 
+    """Read templates and cache them."""
+
     def __init__(self, engine, tolerant=False):
+        """Initialize reader."""
         self._engine = engine
         self._tolerant = tolerant
         self._cached_templates = {}
 
     def read(self, filelike):
+        """Read template from cache or file."""
         if filelike in self._cached_templates:
             return self._cached_templates[filelike]
 
