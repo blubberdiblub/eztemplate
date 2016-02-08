@@ -252,26 +252,42 @@ def variable_outfile_iterator(outfiles, infiles, arggroups, engine):
             yield (outfile, infile, arggroup)
 
 
+class CachedTemplateReader(object):
+
+    def __init__(self, engine, tolerant=False):
+        self._engine = engine
+        self._tolerant = tolerant
+        self._cached_templates = {}
+
+    def read(self, filelike):
+        if filelike in self._cached_templates:
+            return self._cached_templates[filelike]
+
+        if hasattr(filelike, 'read'):
+            template = filelike.read()
+            dirname = None
+        else:
+            with open(filelike, 'r') as f:
+                template = f.read()
+            dirname = os.path.dirname(filelike)
+
+        template = self._engine(template,
+                                dirname=dirname,
+                                tolerant=self._tolerant)
+
+        self._cached_templates[filelike] = template
+        return template
+
+
 def process_combinations(combinations, engine, tolerant=False):
     """Process outfile-infile-arggroup combinations."""
     outfiles = set()
     templates = {}
 
-    for outfile, infile, arggroup in combinations:
-        if infile in templates:
-            template = templates[infile]
-        else:
-            if hasattr(infile, 'read'):
-                template = infile.read()
-                dirname = None
-            else:
-                with open(infile, 'r') as f:
-                    template = f.read()
-                dirname = os.path.dirname(infile)
+    templatereader = CachedTemplateReader(engine, tolerant=tolerant)
 
-            template = templates[infile] = engine(template,
-                                                  dirname=dirname,
-                                                  tolerant=tolerant)
+    for outfile, infile, arggroup in combinations:
+        template = templatereader.read(infile)
 
         if outfile is sys.stdout:
             path = '-'
