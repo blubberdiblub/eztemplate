@@ -252,7 +252,7 @@ def variable_outfile_iterator(outfiles, infiles, arggroups, engine):
             yield (outfile, infile, arggroup)
 
 
-def process_combinations(combinations, engine):
+def process_combinations(combinations, engine, tolerant=False):
     """Process outfile-infile-arggroup combinations."""
     outfiles = set()
     templates = {}
@@ -271,7 +271,7 @@ def process_combinations(combinations, engine):
 
             template = templates[infile] = engine(template,
                                                   dirname=dirname,
-                                                  tolerant=args.tolerant)
+                                                  tolerant=tolerant)
 
         if outfile is sys.stdout:
             path = '-'
@@ -348,7 +348,7 @@ def main(args):
                                        args.infiles,
                                        args.args)
 
-    process_combinations(it, engine)
+    process_combinations(it, engine, tolerant=args.tolerant)
 
 
 if __name__ == '__main__':
