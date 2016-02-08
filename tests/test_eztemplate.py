@@ -36,6 +36,7 @@ class TestArgumentParser(unittest.TestCase):
                 'engine':       'string.Template',
                 'infiles':      [sys.stdin],
                 'outfiles':     [sys.stdout],
+                'read_old':     False,
                 'tolerant':     False,
                 'vary':         False,
             })
@@ -53,6 +54,7 @@ class TestArgumentParser(unittest.TestCase):
                 'engine':       'string.Template',
                 'infiles':      ['template1'],
                 'outfiles':     ['template2'],
+                'read_old':     False,
                 'tolerant':     False,
                 'vary':         False,
             })
@@ -81,6 +83,7 @@ class TestArgumentParser(unittest.TestCase):
                                     'template2',
                                 ],
                 'outfiles':     [sys.stdout],
+                'read_old':     False,
                 'tolerant':     True,
                 'vary':         False,
             })
@@ -104,6 +107,7 @@ class TestArgumentParser(unittest.TestCase):
                 'engine':       'string.Template',
                 'infiles':      ['template'],
                 'outfiles':     [sys.stdout],
+                'read_old':     False,
                 'tolerant':     False,
                 'vary':         False,
             })
