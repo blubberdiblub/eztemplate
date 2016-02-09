@@ -7,6 +7,11 @@ import os.path
 
 import em
 
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+
 from . import Engine
 
 
@@ -46,8 +51,12 @@ class EmpyEngine(Engine):
             # Blame EmPy.
             em.theSubsystem = SubsystemWrapper(basedir=dirname)
 
+        self.output = StringIO()
+        self.interpreter = em.Interpreter(output=self.output)
         self.template = template
 
     def apply(self, mapping):
         """Apply a mapping of name-value-pairs to a template."""
-        return em.expand(self.template, mapping)
+        self.output.truncate(0)
+        self.interpreter.string(self.template, locals=mapping)
+        return self.output.getvalue()
