@@ -256,7 +256,7 @@ def make_path_properties(file_or_path, prefix=''):
         realdir, realbase = os.path.split(tail)
         realstem, realext = os.path.splitext(realbase)
 
-        numbers = re.findall(r'\d+', basename)
+        numbers = [int(s) for s in re.findall(r'\d+', basename)]
         num = numbers[-1] if numbers else None
 
     return {
