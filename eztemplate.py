@@ -28,6 +28,16 @@ def is_filelike(ob):
     return False
 
 
+class _PyArg(str):
+
+    """Wrap a command line python argument.
+
+    Makes it distinguishable from a plain text argument.
+    """
+
+    pass
+
+
 def parse_args(args=None):
     """Parse command line arguments."""
     # The argparse module provides a nice abstraction for argument parsing.
@@ -104,6 +114,13 @@ def parse_args(args=None):
                        help="any number of name-value pairs",
                        metavar="NAME=VALUE",
                        )
+    group.add_argument('-p', '--pyarg',
+                       action='append',
+                       dest='args',
+                       type=_PyArg,
+                       help="evaluate a python expression",
+                       metavar="NAME=EXPRESSION",
+                       )
     group.add_argument('-n', '--next',
                        action='append_const',
                        dest='args',
@@ -171,7 +188,10 @@ def parse_args(args=None):
     args.args = []
     mapping = {}
     for arg in flat_args:
-        if arg == '--':
+        if isinstance(arg, _PyArg):
+            name_value = arg.split('=', 1)
+            mapping[name_value[0]] = eval(name_value[1], {}, mapping)
+        elif arg == '--':
             args.args.append(mapping)
             mapping = {}
         else:
