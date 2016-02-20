@@ -350,7 +350,11 @@ class CachedTemplateReader(object):
         return template
 
 
-def process_combinations(combinations, engine, tolerant=False, read_old=False):
+def process_combinations(combinations, engine,
+                         tolerant=False,
+                         read_old=False,
+                         delete_empty=False,
+                         ):
     """Process outfile-infile-arggroup combinations."""
     outfiles = set()
 
@@ -374,7 +378,7 @@ def process_combinations(combinations, engine, tolerant=False, read_old=False):
         if is_filelike(outfile):
             if result:
                 outfile.write(result)
-        elif result or not args.delete_empty:
+        elif result or not delete_empty:
             if outfile in outfiles:
                 raise IOError("trying to write twice to the same file")
             outfiles.add(outfile)
@@ -405,6 +409,7 @@ def main(args):
     process_combinations(it, engine,
                          tolerant=args.tolerant,
                          read_old=args.read_old,
+                         delete_empty=args.delete_empty,
                          )
 
 
