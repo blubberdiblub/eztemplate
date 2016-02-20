@@ -392,8 +392,8 @@ def process_combinations(combinations, engine,
                     raise
 
 
-def main(args):
-    """Main function."""
+def perform_templating(args):
+    """Perform templating according to the given arguments."""
     engine = engines.engines[args.engine]
 
     if args.vary:
@@ -413,6 +413,11 @@ def main(args):
                          )
 
 
-if __name__ == '__main__':
+def main_command():
+    """Parse command line arguments and perform main action."""
     args = parse_args()
-    main(args)
+    perform_templating(args)
+
+
+if __name__ == '__main__':
+    sys.exit(main_command())
