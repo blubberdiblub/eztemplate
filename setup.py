@@ -4,6 +4,7 @@
 
 import os
 import os.path
+import pkgutil
 import re
 import subprocess
 
@@ -44,6 +45,23 @@ def get_version():
     return version
 
 
+def get_long_description():
+    """Provide README.md converted to reStructuredText format."""
+    description = pkgutil.get_data(__name__, 'README.md')
+    process = subprocess.Popen([
+            'pandoc',
+            '-f', 'markdown_github',
+            '-t', 'rst',
+        ], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    description, __ = process.communicate(input=description)
+    if process.poll() is None:
+        process.kill()
+        raise Exception("pandoc did not terminate")
+    if process.poll():
+        raise Exception("pandoc terminated abnormally")
+    return description
+
+
 if __name__ == '__main__':
     os.chdir(os.path.dirname(__file__))
     setup(
@@ -53,6 +71,7 @@ if __name__ == '__main__':
             author_email='blubberdiblub@gmail.com',
             description="Simple templating program to generate plain text"
                         " (like config files) from name-value pairs.",
+            long_description=get_long_description(),
             license='MIT',
             keywords='templating text',
             url='https://github.com/blubberdiblub/eztemplate/',
