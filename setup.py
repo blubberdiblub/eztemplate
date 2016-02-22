@@ -9,13 +9,13 @@ import pkgutil
 import re
 import subprocess
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 def get_version():
     """Build version number from git repository tag."""
     try:
-        import version
+        from eztemplate import version
     except ImportError:
         version = None
 
@@ -55,7 +55,7 @@ def get_version():
         git_version += '+' + '.'.join(local)
 
     if not version or git_version != version.__version__:
-        with open('version.py', 'w') as f:
+        with open('eztemplate/version.py', 'w') as f:
             f.write("__version__ = %r\n" % (git_version,))
 
     return git_version
@@ -101,15 +101,11 @@ if __name__ == '__main__':
             license='MIT',
             keywords='templating text',
             url='https://github.com/blubberdiblub/eztemplate/',
-            py_modules=['eztemplate'],
-            packages=[
-                'engines',
-                'tests',
-            ],
+            packages=find_packages(),
             include_package_data=True,
             entry_points={
                 'console_scripts': [
-                    'eztemplate = eztemplate:main_command',
+                    'eztemplate = eztemplate.__main__:main_command',
                 ],
             }
         )

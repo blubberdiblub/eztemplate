@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Provide a simple templating system for text files."""
 
+from __future__ import absolute_import
 from __future__ import print_function
 
 import argparse
@@ -10,7 +11,7 @@ import os.path
 import re
 import sys
 
-import engines
+from . import engines
 
 
 def is_filelike(ob):
