@@ -56,7 +56,7 @@ def get_version():
 
     if not version or git_version != version.__version__:
         with open('eztemplate/version.py', 'w') as f:
-            f.write("__version__ = %r\n" % (git_version,))
+            f.write("__version__ = %r\n" % (str(git_version),))
 
     return git_version
 
