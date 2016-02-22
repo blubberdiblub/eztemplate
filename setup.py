@@ -99,7 +99,10 @@ if __name__ == '__main__':
                         " (like config files) from name-value pairs.",
             long_description=get_long_description(),
             license='MIT',
-            keywords='templating text',
+            keywords=[
+                    'templating',
+                    'text',
+                ],
             url='https://github.com/blubberdiblub/eztemplate/',
             packages=find_packages(exclude=[
                     'tests',
