@@ -104,6 +104,14 @@ if __name__ == '__main__':
                     'text',
                 ],
             url='https://github.com/blubberdiblub/eztemplate/',
+            install_requires=[
+                    'argparse',
+                ],
+            extras_require={
+                    'empy': ['empy'],
+                    'mako': ['mako'],
+                },
+            test_suite='tests',
             packages=find_packages(exclude=[
                     'tests',
                     'tests.*',
@@ -111,9 +119,25 @@ if __name__ == '__main__':
                     '*.tests.*',
                 ]),
             include_package_data=True,
+            zip_safe=False,
             entry_points={
                 'console_scripts': [
                     'eztemplate = eztemplate.__main__:main_command',
                 ],
-            }
+            },
+            classifiers=[
+                    'Development Status :: 3 - Alpha',
+                    'Environment :: Console',
+                    'Intended Audience :: End Users/Desktop',
+                    'Intended Audience :: System Administrators',
+                    'License :: OSI Approved :: MIT License',
+                    'Operating System :: OS Independent',
+                    'Programming Language :: Python',
+                    'Programming Language :: Python :: 2',
+                    'Programming Language :: Python :: 2.7',
+                    'Programming Language :: Python :: 3',
+                    'Topic :: System :: Systems Administration',
+                    'Topic :: Text Processing :: General',
+                    'Topic :: Utilities',
+                ],
         )
