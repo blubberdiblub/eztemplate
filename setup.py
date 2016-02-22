@@ -2,6 +2,7 @@
 
 """Setup for eztemplate."""
 
+import errno
 import os
 import os.path
 import pkgutil
@@ -48,17 +49,27 @@ def get_version():
 def get_long_description():
     """Provide README.md converted to reStructuredText format."""
     description = pkgutil.get_data(__name__, 'README.md')
-    process = subprocess.Popen([
-            'pandoc',
-            '-f', 'markdown_github',
-            '-t', 'rst',
-        ], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    if description is None:
+        return None
+
+    try:
+        process = subprocess.Popen([
+                'pandoc',
+                '-f', 'markdown_github',
+                '-t', 'rst',
+            ], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    except OSError as e:
+        if e.errno == errno.ENOENT:
+            return None
+        raise
+
     description, __ = process.communicate(input=description)
     if process.poll() is None:
         process.kill()
         raise Exception("pandoc did not terminate")
     if process.poll():
         raise Exception("pandoc terminated abnormally")
+
     return description
 
 
