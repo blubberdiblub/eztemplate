@@ -143,17 +143,20 @@ class TestCheckEngine(unittest.TestCase):
         mock_dump_engines.assert_called_once_with()
 
     def test_unavailable_engine(self):
+        mock_stdout = StringIO()
         mock_stderr = StringIO()
-        with mock.patch('sys.stderr', mock_stderr):
+        with mock.patch('sys.stdout', mock_stdout), \
+             mock.patch('sys.stderr', mock_stderr):
             try:
                 eztemplate.__main__.parse_args(args=['-e', '<NONEXISTENT_ENGINE>'])
             except SystemExit as e:
-                self.assertEqual(e.args[0], 1, "didn't exit with return code 1")
+                self.assertEqual(e.args[0], 2, "didn't exit with return code 2")
             else:
                 self.fail("didn't exit")
 
-        self.assertEqual(mock_stderr.getvalue().strip(),
-                         'Engine "<NONEXISTENT_ENGINE>" is not available.')
+        self.assertEqual(mock_stdout.getvalue(), '')
+        self.assertIn("Engine '<NONEXISTENT_ENGINE>' is not available.",
+                      mock_stderr.getvalue())
 
     def test_built_in_engines(self):
         for engine in ('string.Template',):
