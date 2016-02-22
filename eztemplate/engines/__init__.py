@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Templating engine package."""
 
+from __future__ import absolute_import
 from __future__ import print_function
 
 import collections
@@ -125,7 +126,7 @@ def _init():
 
     for module_name in module_names:
         try:
-            module = importlib.import_module('.' + module_name, __package__)
+            module = importlib.import_module('.' + module_name, __name__)
         except ImportError:
             continue
 

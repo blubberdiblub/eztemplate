@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import absolute_import
 from __future__ import print_function
 
 import unittest
@@ -22,13 +23,13 @@ try:
 except ImportError:
     from io import StringIO
 
-import eztemplate
+import eztemplate.__main__
 
 
 class TestArgumentParser(unittest.TestCase):
 
     def test_empty_arguments(self):
-        args = eztemplate.parse_args([])
+        args = eztemplate.__main__.parse_args([])
         self.assertDictEqual(vars(args), {
                 'args':         [{}],
                 'concatenate':  False,
@@ -42,7 +43,7 @@ class TestArgumentParser(unittest.TestCase):
             })
 
     def test_one_argument_and_output_delete_empty(self):
-        args = eztemplate.parse_args([
+        args = eztemplate.__main__.parse_args([
                 '--outfile=template2',
                 '--delete-empty',
                 'template1',
@@ -60,7 +61,7 @@ class TestArgumentParser(unittest.TestCase):
             })
 
     def test_engine_tolerant_stdout_concatenate_args_multiple_files(self):
-        args = eztemplate.parse_args([
+        args = eztemplate.__main__.parse_args([
                 '-e', 'string.Template',
                 '--tolerant',
                 '--stdout',
@@ -89,7 +90,7 @@ class TestArgumentParser(unittest.TestCase):
             })
 
     def test_engine_separator_template_separator_args(self):
-        args = eztemplate.parse_args([
+        args = eztemplate.__main__.parse_args([
                 '--engine', 'string.Template',
                 '--',
                 'template',
@@ -116,7 +117,7 @@ class TestArgumentParser(unittest.TestCase):
         mock_stderr = StringIO()
         try:
             with mock.patch('sys.stderr', mock_stderr):
-                eztemplate.parse_args([
+                eztemplate.__main__.parse_args([
                     '--args', 'foo=bar',
                     'template1',
                     'template2',
@@ -131,9 +132,9 @@ class TestCheckEngine(unittest.TestCase):
     
     def test_help(self):
         mock_dump_engines = mock.Mock()
-        with mock.patch('eztemplate.dump_engines', mock_dump_engines):
+        with mock.patch('eztemplate.__main__.dump_engines', mock_dump_engines):
             try:
-                eztemplate.check_engine('help')
+                eztemplate.__main__.parse_args(args=['-e', 'help'])
             except SystemExit as e:
                 self.assertEqual(e.args[0], 0, "didn't exit with return code 0")
             else:
@@ -145,7 +146,7 @@ class TestCheckEngine(unittest.TestCase):
         mock_stderr = StringIO()
         with mock.patch('sys.stderr', mock_stderr):
             try:
-                eztemplate.check_engine('<NONEXISTENT_ENGINE>')
+                eztemplate.__main__.parse_args(args=['-e', '<NONEXISTENT_ENGINE>'])
             except SystemExit as e:
                 self.assertEqual(e.args[0], 1, "didn't exit with return code 1")
             else:
@@ -156,7 +157,7 @@ class TestCheckEngine(unittest.TestCase):
 
     def test_built_in_engines(self):
         for engine in ('string.Template',):
-            eztemplate.check_engine(engine)
+            eztemplate.__main__.check_engine(engine)
 
 
 if __name__ == '__main__':

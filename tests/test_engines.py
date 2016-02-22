@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import absolute_import
 from __future__ import print_function
 
 import unittest
@@ -13,7 +14,7 @@ import imp
 import os.path
 
 
-import engines
+from eztemplate import engines
 
 
 class TestInit(unittest.TestCase):
@@ -43,7 +44,7 @@ class TestInit(unittest.TestCase):
         result_dict = {handle: None for __, (__, handle) in valid_engines.items()}
 
         def mock_import_module(name, package):
-            self.assertEqual(package, 'engines')
+            self.assertEqual(package, 'eztemplate.engines')
 
             assert name.startswith('.')
             name = name[1:]

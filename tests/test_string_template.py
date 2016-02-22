@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
+from __future__ import absolute_import
 from __future__ import print_function
 
 import unittest
 
 
-import engines
+from eztemplate import engines
 
 
 HANDLE = 'string.Template'

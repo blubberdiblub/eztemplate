@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Provide the mako templating engine."""
 
+from __future__ import absolute_import
 from __future__ import print_function
 
 
