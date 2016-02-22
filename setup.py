@@ -14,16 +14,29 @@ from setuptools import setup
 
 def get_version():
     """Build version number from git repository tag."""
-    version = subprocess.check_output(['git', 'describe', '--dirty']).decode()
+    try:
+        import version
+    except ImportError:
+        version = None
+
+    try:
+        git_version = subprocess.check_output(['git', 'describe', '--dirty'])
+    except OSError as e:
+        if e.errno == errno.ENOENT:
+            if not version:
+                raise ValueError("missing version number")
+            return version.__version__
+        raise
+
     m = re.match(r'^\s*'
                  r'(?P<version>\S+?)'
                  r'(-(?P<post>\d+)-(?P<commit>g[0-9a-f]+))?'
                  r'(-(?P<dirty>dirty))?'
-                 r'\s*$', version)
+                 r'\s*$', git_version.decode())
     if not m:
         raise ValueError("cannot parse git describe output")
 
-    version = m.group('version')
+    git_version = m.group('version')
     post = m.group('post')
     commit = m.group('commit')
     dirty = m.group('dirty')
@@ -33,7 +46,7 @@ def get_version():
     if post:
         post = int(post)
         if post:
-            version += '.post%d' % (post,)
+            git_version += '.post%d' % (post,)
             if commit:
                 local.append(commit)
 
@@ -41,9 +54,13 @@ def get_version():
         local.append(dirty)
 
     if local:
-        version += '+' + '.'.join(local)
+        git_version += '+' + '.'.join(local)
 
-    return version
+    if not version or git_version != version.__version__:
+        with open('version.py', 'w') as f:
+            f.write("__version__ = %r\n" % (git_version,))
+
+    return git_version
 
 
 def get_long_description():
