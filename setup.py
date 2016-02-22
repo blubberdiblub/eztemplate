@@ -101,7 +101,12 @@ if __name__ == '__main__':
             license='MIT',
             keywords='templating text',
             url='https://github.com/blubberdiblub/eztemplate/',
-            packages=find_packages(),
+            packages=find_packages(exclude=[
+                    'tests',
+                    'tests.*',
+                    '*.tests',
+                    '*.tests.*',
+                ]),
             include_package_data=True,
             entry_points={
                 'console_scripts': [
