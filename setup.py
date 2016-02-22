@@ -21,12 +21,10 @@ def get_version():
 
     try:
         git_version = subprocess.check_output(['git', 'describe', '--dirty'])
-    except OSError as e:
-        if e.errno == errno.ENOENT:
-            if not version:
-                raise ValueError("missing version number")
-            return version.__version__
-        raise
+    except:
+        if not version:
+            raise ValueError("cannot determine version number")
+        return version.__version__
 
     m = re.match(r'^\s*'
                  r'(?P<version>\S+?)'
