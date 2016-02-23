@@ -13,6 +13,7 @@ VIRTUALENV := /usr/bin/virtualenv
 .PHONY: clean
 clean:
 	$(SETUP) clean --all
+	$(RM) -rf -- $(PROJECT).egg-info
 	$(FIND) $(PROJECT) $(TESTS) -type f -name '*.pyc' -delete
 	$(FIND) $(PROJECT) $(TESTS) -depth -type d -name '__pycache__' -delete
 
