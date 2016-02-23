@@ -12,6 +12,7 @@ import re
 import sys
 
 from . import engines
+from . import __version__
 
 
 def is_filelike(ob):
@@ -44,7 +45,13 @@ def parse_args(args=None):
     # The argparse module provides a nice abstraction for argument parsing.
     # It automatically builds up the help text, too.
     parser = argparse.ArgumentParser(
-            description='Make substitutions in text files.')
+            prog=__package__,
+            description='Make substitutions in text files.',
+        )
+    parser.add_argument('-V', '--version',
+                        action='version',
+                        version="%%(prog)s %s" % (__version__,),
+                        )
 
     group = parser.add_argument_group("Engine")
     group.add_argument('-e', '--engine',
