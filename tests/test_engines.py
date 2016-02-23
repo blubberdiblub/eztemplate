@@ -14,7 +14,7 @@ import imp
 import os.path
 
 
-from eztemplate import engines
+from .context import engines
 
 
 class TestInit(unittest.TestCase):

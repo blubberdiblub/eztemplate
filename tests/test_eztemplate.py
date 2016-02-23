@@ -23,7 +23,7 @@ try:
 except ImportError:
     from io import StringIO
 
-import eztemplate.__main__
+from .context import eztemplate
 
 
 class TestArgumentParser(unittest.TestCase):

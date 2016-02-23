@@ -6,7 +6,7 @@ from __future__ import print_function
 import unittest
 
 
-from eztemplate import engines
+from .context import engines
 
 
 HANDLE = 'string.Template'
