@@ -32,6 +32,10 @@ empy: $(VENV)
 mako: $(VENV)
 	$(ACTIVATE) && pip install mako
 
+.PHONY: install
+install: $(VENV)
+	$(ACTIVATE) && pip install --upgrade --force-reinstall .
+
 .PHONY: test
 test:
 	$(SETUP) test
