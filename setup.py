@@ -2,6 +2,7 @@
 
 """Setup for eztemplate."""
 
+import ast
 import errno
 import os
 import os.path
@@ -15,16 +16,23 @@ from setuptools import setup, find_packages
 def get_version():
     """Build version number from git repository tag."""
     try:
-        from eztemplate import version
-    except ImportError:
-        version = None
+        f = open('eztemplate/version.py', 'r')
+    except IOError as e:
+        if e.errno != errno.ENOENT:
+            raise
+        m = None
+    else:
+        m = re.match('^\s*__version__\s*=\s*(?P<version>.*)$', f.read(), re.M)
+        f.close()
+
+    __version__ = ast.literal_eval(m.group('version')) if m else None
 
     try:
         git_version = subprocess.check_output(['git', 'describe', '--dirty'])
     except:
-        if not version:
+        if __version__ is None:
             raise ValueError("cannot determine version number")
-        return version.__version__
+        return __version__
 
     m = re.match(r'^\s*'
                  r'(?P<version>\S+?)'
@@ -54,7 +62,7 @@ def get_version():
     if local:
         git_version += '+' + '.'.join(local)
 
-    if not version or git_version != version.__version__:
+    if git_version != __version__:
         with open('eztemplate/version.py', 'w') as f:
             f.write("__version__ = %r\n" % (str(git_version),))
 
