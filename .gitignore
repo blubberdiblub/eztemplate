@@ -1,3 +1,6 @@
+# automatically generated version file
+/eztemplate/version.py
+
 # compiled Python files
 *.pyc
 *.pyo
