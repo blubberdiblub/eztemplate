@@ -107,7 +107,7 @@ class TestTemplating(unittest.TestCase):
                 'Heute gibt es\n'
                 '@{sys.stdout.write(essen)} mit\n'
                 '@{sys.stdout.write(beilage)} und\n'
-                '@{sys.stdout.write(5 - 3)} @{\n'
+                '@{sys.stdout.write("%d" % (5 - 3,))} @{\n'
                 'print("".join([\n'
                 '               "Nach",\n'
                 '               "speise",\n'
