@@ -58,6 +58,7 @@ class EmpyEngine(Engine):
 
     def apply(self, mapping):
         """Apply a mapping of name-value-pairs to a template."""
+        self.output.seek(0)
         self.output.truncate(0)
         self.interpreter.string(self.template, locals=mapping)
         return self.output.getvalue()
