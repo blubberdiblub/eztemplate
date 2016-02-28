@@ -80,7 +80,11 @@ def get_long_description():
                 'pandoc',
                 '-f', 'markdown_github',
                 '-t', 'rst',
-            ], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+            ],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            universal_newlines=True,
+            )
     except OSError as e:
         if e.errno == errno.ENOENT:
             return None
