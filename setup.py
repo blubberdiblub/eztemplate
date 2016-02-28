@@ -6,7 +6,6 @@ import ast
 import errno
 import os
 import os.path
-import pkgutil
 import re
 import subprocess
 
@@ -71,8 +70,12 @@ def get_version():
 
 def get_long_description():
     """Provide README.md converted to reStructuredText format."""
-    description = pkgutil.get_data(__name__, 'README.md')
-    if description is None:
+    try:
+        with open('README.md', 'r') as f:
+            description = f.read()
+    except OSError as e:
+        if e.errno != errno.ENOENT:
+            raise
         return None
 
     try:
