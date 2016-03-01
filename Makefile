@@ -12,6 +12,8 @@ VIRTUALENV := /usr/bin/virtualenv
 
 PYTHON := /usr/bin/python
 
+PYFILES := $(wildcard $(PROJECT)/*.py $(PROJECT)/*/*.py $(PROJECT)/*/*/*.py)
+
 .PHONY: clean
 clean:
 	$(PYTHON) $(SETUP) clean --all
@@ -41,6 +43,13 @@ install: $(VENV)
 .PHONY: test
 test:
 	$(PYTHON) $(SETUP) test
+
+.coverage: $(PYFILES)
+	$(PYTHON) -m coverage run --source $(PROJECT) $(SETUP) test
+
+.PHONY: coverage
+coverage: .coverage
+	$(PYTHON) -m coverage report -m
 
 .PHONY: sdist
 sdist:
