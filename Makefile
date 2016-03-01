@@ -10,9 +10,11 @@ RM := /bin/rm
 SETUP := ./setup.py
 VIRTUALENV := /usr/bin/virtualenv
 
+PYTHON := /usr/bin/python
+
 .PHONY: clean
 clean:
-	$(SETUP) clean --all
+	$(PYTHON) $(SETUP) clean --all
 	$(RM) -rf -- $(PROJECT).egg-info
 	$(FIND) $(PROJECT) $(TESTS) -type f -name '*.pyc' -delete
 	$(FIND) $(PROJECT) $(TESTS) -depth -type d -name '__pycache__' -delete
@@ -38,19 +40,19 @@ install: $(VENV)
 
 .PHONY: test
 test:
-	$(SETUP) test
+	$(PYTHON) $(SETUP) test
 
 .PHONY: sdist
 sdist:
-	$(SETUP) sdist
+	$(PYTHON) $(SETUP) sdist
 
 .PHONY: bdist
 bdist:
-	$(SETUP) bdist
+	$(PYTHON) $(SETUP) bdist
 
 .PHONY: wheel
 wheel:
-	$(SETUP) bdist_wheel
+	$(PYTHON) $(SETUP) bdist_wheel
 
 .PHONY: dists
 dists: sdist bdist wheel
